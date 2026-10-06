@@ -21,23 +21,23 @@ from opensourceleg.utilities import SoftRealtimeLoop
 GEAR_RATIO = 9 * (83 / 18)
 FREQUENCY = 200
 
-#LOADCELL_CALIBRATION_MATRIX = np.array([
-#    (-38.72600, -1817.74700, 9.84900, 43.37400, -44.54000, 1824.67000),
-#    (-8.61600, 1041.14900, 18.86100, -2098.82200, 31.79400, 1058.6230),
-#    (-1047.16800, 8.63900, -1047.28200, -20.70000, -1073.08800, -8.92300),
-#    (20.57600, -0.04000, -0.24600, 0.55400, -21.40800, -0.47600),
-#    (-12.13400, -1.10800, 24.36100, 0.02300, -12.14100, 0.79200),
-#    (-0.65100, -28.28700, 0.02200, -25.23000, 0.47300, -27.3070),
-#])
+# LOADCELL_CALIBRATION_MATRIX = np.array([
+#     (-38.72600, -1817.74700, 9.84900, 43.37400, -44.54000, 1824.67000),
+#     (-8.61600, 1041.14900, 18.86100, -2098.82200, 31.79400, 1058.6230),
+#     (-1047.16800, 8.63900, -1047.28200, -20.70000, -1073.08800, -8.92300),
+#     (20.57600, -0.04000, -0.24600, 0.55400, -21.40800, -0.47600),
+#     (-12.13400, -1.10800, 24.36100, 0.02300, -12.14100, 0.79200),
+#     (-0.65100, -28.28700, 0.02200, -25.23000, 0.47300, -27.3070),
+# ])
 
-LOADCELL_CALIBRATION_MATRIX = np.array([ 
-    (-12.59925, -1714.72670, 30.08768, 23.83767, -19.06937, 1591.12752), 
-    (-20.61383, 973.84169, 32.63392, -1823.09994, 17.86314, 920.63255), 
-    (-1009.60931, 11.02942, -968.67876, -8.28354, -982.19232, -4.29526), 
-    (21.04895, 1.39746, 0.04007, -0.84455, -20.68956, -0.57042), 
-    (-12.32609, 0.49963, 23.45320, 0.46924, -12.07187, -0.73778), 
+LOADCELL_CALIBRATION_MATRIX = np.array([
+    (-12.59925, -1714.72670, 30.08768, 23.83767, -19.06937, 1591.12752),
+    (-20.61383, 973.84169, 32.63392, -1823.09994, 17.86314, 920.63255),
+    (-1009.60931, 11.02942, -968.67876, -8.28354, -982.19232, -4.29526),
+    (21.04895, 1.39746, 0.04007, -0.84455, -20.68956, -0.57042),
+    (-12.32609, 0.49963, 23.45320, 0.46924, -12.07187, -0.73778),
     (-0.19264, -26.63914, 0.27437, -24.21785, 0.50465, -25.58366),
-]) 
+])
 
 BODY_WEIGHT = 30 * 9.8
 
@@ -139,9 +139,12 @@ if __name__ == "__main__":
     b_log = []
     state_log = []
 
-    # NEW: theta logging
+    # Theta logging
     theta_log = []
     theta_ref_log = []
+
+    # NEW: Load cell force logging
+    fz_log = []
 
     # ---------------- SYSTEM STARTUP ---------------- #
 
@@ -177,13 +180,13 @@ if __name__ == "__main__":
                 k = fsm.current_state.knee_stiffness
                 b = fsm.current_state.knee_damping
 
-                # reference angle
+                # Reference angle
                 theta_ref = np.deg2rad(fsm.current_state.knee_theta)
 
-                # actual knee angle
+                # Actual knee angle
                 theta_actual = osl.knee.output_position
 
-                # apply impedance control
+                # Apply impedance control
                 osl.knee.set_output_impedance(k=k, b=b)
                 osl.knee.set_motor_position(theta_ref)
 
@@ -208,7 +211,10 @@ if __name__ == "__main__":
 
                 state_log.append(fsm.current_state.name)
 
-                # NEW: theta logging
+                # Load cell force logging
+                fz_log.append(osl.loadcell.fz)
+
+                # Theta logging
                 theta_log.append(np.rad2deg(theta_actual))
                 theta_ref_log.append(np.rad2deg(theta_ref))
 
@@ -224,6 +230,9 @@ if __name__ == "__main__":
 
     theta_log = np.array(theta_log)
     theta_ref_log = np.array(theta_ref_log)
+
+    # Load cell force
+    fz_log = np.array(fz_log)
 
     # ---------------- HELPER FUNCTION ---------------- #
 
@@ -248,7 +257,12 @@ if __name__ == "__main__":
 
         plt.grid(True)
 
-        plt.savefig(filename, dpi=300, bbox_inches="tight")
+        plt.savefig(
+            filename,
+            dpi=300,
+            bbox_inches="tight"
+        )
+
         plt.close()
 
     # ---------------- STIFFNESS PLOT ---------------- #
@@ -303,7 +317,90 @@ if __name__ == "__main__":
 
     plt.show()
 
+    # ---------------- LOAD CELL FORCE PLOT ---------------- #
+
+    plt.figure(figsize=(12, 6))
+
+    # Plot Fz with different line styles depending on FSM state
+    for i in range(1, len(time_log)):
+
+        style = "-" if state_log[i] == "stance" else "--"
+
+        plt.plot(
+            time_log[i-1:i+1],
+            fz_log[i-1:i+1],
+            style,
+            color="black"
+        )
+
+    # Stance -> Swing threshold
+    plt.axhline(
+        -LOAD_SWING,
+        linestyle=":",
+        color="red",
+        label=f"Stance → Swing threshold ({-LOAD_SWING:.1f} N)"
+    )
+
+    # Swing -> Stance threshold
+    plt.axhline(
+        -LOAD_STANCE,
+        linestyle=":",
+        color="blue",
+        label=f"Swing → Stance threshold ({-LOAD_STANCE:.1f} N)"
+    )
+
+    plt.title("Load Cell Force and FSM State Over Time")
+    plt.xlabel("Time (s)")
+    plt.ylabel("Fz (N)")
+
+    plt.grid(True)
+
+    # Legend for FSM states and thresholds
+    from matplotlib.lines import Line2D
+
+    legend_elements = [
+        Line2D(
+            [0],
+            [0],
+            color="black",
+            linestyle="-",
+            label="Stance"
+        ),
+        Line2D(
+            [0],
+            [0],
+            color="black",
+            linestyle="--",
+            label="Swing"
+        ),
+        Line2D(
+            [0],
+            [0],
+            color="red",
+            linestyle=":",
+            label=f"Stance → Swing ({-LOAD_SWING:.1f} N)"
+        ),
+        Line2D(
+            [0],
+            [0],
+            color="blue",
+            linestyle=":",
+            label=f"Swing → Stance ({-LOAD_STANCE:.1f} N)"
+        )
+    ]
+
+    plt.legend(handles=legend_elements)
+
+    plt.savefig(
+        "loadcell_force_fsm_plot.png",
+        dpi=300,
+        bbox_inches="tight"
+    )
+
+    plt.show()
+
     print("Plots saved:")
     print("- knee_stiffness_plot.png")
     print("- knee_damping_plot.png")
     print("- knee_theta_plot.png")
+    print("- loadcell_force_fsm_plot.png")
