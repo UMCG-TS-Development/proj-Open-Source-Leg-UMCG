@@ -322,8 +322,8 @@ if __name__ == "__main__":
                 torque_error = torque_actual - torque_commanded
 
                 # Signed angle errors (rad), converted to degrees for plotting
-                angle_error_encoder = np.rad2deg(theta_ref - encoder_theta)
-                angle_error_actuator = np.rad2deg(theta_ref - theta_actual)
+                angle_error_encoder = np.rad2deg(theta_ref - (np.deg2rad(100)-encoder_theta)) #added 100 to encoder theta to account for zero position offset 
+                angle_error_actuator = np.rad2deg(theta_ref - theta_actual)  
 
                 # ---------------- LOADCELL AXES ---------------- #
 
