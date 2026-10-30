@@ -30,7 +30,7 @@ LOADCELL_CALIBRATION_MATRIX = np.array([
     (-0.65100, -28.28700, 0.02200, -25.23000, 0.47300, -27.3070),
 ])
 
-BODY_WEIGHT = 30 * 9.8
+BODY_WEIGHT = 40 * 9.8
 
 MIN_STATE_TIME = 0.15 #seconds
 
@@ -60,7 +60,7 @@ def create_knee_fsm(osl: OpenSourceLeg) -> StateMachine:
     early_stance = State(
         name="early_stance",
         knee_theta=15,
-        knee_stiffness=20,
+        knee_stiffness=100,
         knee_damping=1,
     )
 

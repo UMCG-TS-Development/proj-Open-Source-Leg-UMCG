@@ -2,6 +2,10 @@
 Finite state machine (FSM)-based knee control system for the OpenSourceLeg platform.
 State transitions are based on FILTERED load cell feedback and encoder angle.
 A minimum state duration / transition lockout avoids rapid switching due to noisy signals.
+
+The script also logs and plots the knee control errors, including torque error
+(actual torque minus commanded torque) and angle errors, and compares actual
+and commanded torque over time.
 """
 
 import numpy as np
@@ -31,7 +35,7 @@ LOADCELL_CALIBRATION_MATRIX = np.array([
     (-0.65100, -28.28700, 0.02200, -25.23000, 0.47300, -27.3070),
 ])
 
-BODY_WEIGHT = 30 * 9.8
+BODY_WEIGHT = 33 * 9.8
 MIN_STATE_TIME = 0.15  # seconds
 
 
@@ -501,6 +505,37 @@ if __name__ == "__main__":
     plt.savefig("knee_torque_error_plot.png", dpi=300, bbox_inches="tight")
     plt.close()
 
+
+    # ---------------- TORQUE ACTUAL VS COMMANDED ---------------- #
+
+    plt.figure(figsize=(12, 5))
+
+    plt.plot(
+        time_log,
+        torque_actual_log,
+        color="tab:blue",
+        label="Actual Torque",
+        linewidth=1.5
+    )
+
+    plt.plot(
+        time_log,
+        torque_commanded_log,
+        color="tab:orange",
+        label="Commanded Torque",
+        linewidth=1.5
+    )
+
+    plt.title("Actual vs Commanded Knee Torque Over Time")
+    plt.xlabel("Time (s)")
+    plt.ylabel("Torque (Nm)")
+    plt.grid(True)
+    plt.legend()
+
+    plt.tight_layout()
+    plt.savefig("knee_torque_comparison_plot.png", dpi=300, bbox_inches="tight")
+    plt.close()
+
     # ---------------- ANGLE ERRORS ---------------- #
 
     fig, axs = plt.subplots(2, 1, figsize=(12, 8), sharex=True)
@@ -655,6 +690,7 @@ if __name__ == "__main__":
     print("- knee_damping_plot.png")
     print("- knee_theta_plot.png")
     print("- knee_torque_error_plot.png")
+    print("- knee_torque_comparison_plot.png")
     print("- knee_angle_error_plot.png")
     print("- encoder_loadcell_outputs_plot.png")
     print("- loadcell_forces_moments_plot.png")
