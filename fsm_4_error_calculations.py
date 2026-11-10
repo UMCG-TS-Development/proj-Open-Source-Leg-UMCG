@@ -310,7 +310,7 @@ if __name__ == "__main__":
 
                 # The impedance equation requires radians and rad/s.
                 # This uses encoder velocity as the angular velocity estimate.
-                angular_vel = encoder_velocity
+                angular_vel = -encoder_velocity # The negative sign is used to align the direction of the encoder velocity with the actuator's torque response.
 
                 # The requested commanded-torque equation uses actuator angle.
                 torque_commanded = (
