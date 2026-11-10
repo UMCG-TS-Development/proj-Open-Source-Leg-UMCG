@@ -2,7 +2,7 @@
 Knee Actuator Single-Oscillation Control
 
 Allows manual control of a Dephy knee actuator to perform exactly one
-oscillation (0° → 90° → 0°) per command.
+oscillation (0° → 45° → 0°) per command.
 
 Features:
 - Homing before starting.
@@ -38,7 +38,7 @@ def make_periodic_trajectory(period, minimum, maximum):
 
 
 # One oscillation trajectory (5 second period)
-knee_traj = make_periodic_trajectory(5, 0, 90)
+knee_traj = make_periodic_trajectory(5, 0, 45)
 
 
 def run_one_oscillation():

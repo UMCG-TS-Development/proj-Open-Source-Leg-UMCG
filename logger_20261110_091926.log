@@ -1,0 +1,4 @@
+[2026-11-10 09:19:26,879] DEBUG: [knee] Entering Voltage control mode.
+[2026-11-10 09:19:30,025] DEBUG: [knee]  Exiting Voltage control mode.
+[2026-11-10 09:19:30,126] DEBUG: [knee]  Entering Position control mode.
+[2026-11-10 09:20:04,827] DEBUG: [knee]  Exiting Position control mode.
