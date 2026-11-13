@@ -1,0 +1,6 @@
+[2026-11-13 04:47:52,362] DEBUG: Calling start method of knee
+[2026-11-13 04:47:53,242] DEBUG: [knee] Entering Voltage control mode.
+[2026-11-13 04:48:02,681] DEBUG: [knee]  Exiting Voltage control mode.
+[2026-11-13 04:48:02,782] DEBUG: [knee]  Entering Current control mode.
+[2026-11-13 04:48:06,221] DEBUG: Calling stop method of knee
+[2026-11-13 04:48:06,221] DEBUG: [knee]  Exiting Current control mode.
