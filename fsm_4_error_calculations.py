@@ -74,7 +74,7 @@ def create_knee_fsm(osl: OpenSourceLeg) -> StateMachine:
     late_stance = State(
         name="late_stance",
         knee_theta=1,
-        knee_stiffness=100,
+        knee_stiffness=40,
         knee_damping=20,
     )
 
@@ -304,13 +304,14 @@ if __name__ == "__main__":
 
                 # Apply the impedance controller
                 osl.knee.set_output_impedance(k=k, b=b)
+                #osl.knee.set_output_position(theta_ref) 
                 osl.knee.set_motor_position(theta_ref)
 
                 # ---------------- TORQUE AND ANGLE ERRORS ---------------- #
 
                 # The impedance equation requires radians and rad/s.
                 # This uses encoder velocity as the angular velocity estimate.
-                angular_vel = -encoder_velocity # The negative sign is used to align the direction of the encoder velocity with the actuator's torque response.
+                angular_vel = osl.knee.output_velocity #angular_vel = -encoder_velocity # The negative sign is used to align the direction of the encoder velocity with the actuator's torque response.
 
                 # The requested commanded-torque equation uses actuator angle.
                 torque_commanded = (
