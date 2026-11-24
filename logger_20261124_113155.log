@@ -1,0 +1,4 @@
+[2026-11-24 11:31:55,710] DEBUG: Calling start method of LoadcellBase
+[2026-11-24 11:31:56,712] INFO: [LoadcellBase] Initiating zeroing routine, please ensure that there is no ground contact force.
+[2026-11-24 11:32:01,608] INFO: [LoadcellBase] Calibration routine complete.
+[2026-11-24 11:32:29,345] DEBUG: Calling stop method of LoadcellBase
