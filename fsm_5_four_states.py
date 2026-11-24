@@ -47,7 +47,7 @@ LOADCELL_CALIBRATION_MATRIX = np.array([
 ])
 
 BODY_WEIGHT = 60 * 9.8
-MIN_STATE_TIME = 0.15
+MIN_STATE_TIME = 0.25
 
 
 # ---------------- FSM PARAMETERS ---------------- #
@@ -61,7 +61,7 @@ KNEE_LSTANCE = np.deg2rad(98)
 
 # Encoder threshold for starting late swing.
 # Check this value against your measured encoder angles.
-KNEE_LATE_SWING = np.deg2rad(65) # Adjust this value based on preferences when testing
+KNEE_LATE_SWING = np.deg2rad(75) # Adjust this value based on preferences when testing
 
 
 # ---------------- FSM ---------------- #
@@ -72,7 +72,7 @@ def create_knee_fsm(osl: OpenSourceLeg) -> StateMachine:
 
     swing = State(
         name="swing",
-        knee_theta=70,
+        knee_theta=60,
         knee_stiffness=10,
         knee_damping=0.5,
     )
@@ -81,7 +81,7 @@ def create_knee_fsm(osl: OpenSourceLeg) -> StateMachine:
 
     late_swing = State(
         name="late_swing",
-        knee_theta=3,
+        knee_theta=4,
         knee_stiffness=20,
         knee_damping=1,
     )
@@ -90,7 +90,7 @@ def create_knee_fsm(osl: OpenSourceLeg) -> StateMachine:
 
     early_stance = State(
         name="early_stance",
-        knee_theta=1,
+        knee_theta=5,
         knee_stiffness=40,
         knee_damping=1,
     )
